@@ -1288,22 +1288,26 @@ static flutter::PointerData::DeviceKind DeviceKindFromTouchType(UITouch* touch) 
   CGRect keyboardFrame = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
   CGRect screenRect = [[UIScreen mainScreen] bounds];
 
+
   // Get the animation duration
   NSTimeInterval duration =
       [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
 
   // Considering the iPad's split keyboard, Flutter needs to check if the keyboard frame is present
   // in the screen to see if the keyboard is visible.
-  if (CGRectIntersectsRect(keyboardFrame, screenRect)) {
+    if (keyboardFrame.origin.x != 0 || keyboardFrame.origin.y != 0) {
+        self.targetViewInsetBottom = 0;
+    } else {
     CGFloat bottom = CGRectGetHeight(keyboardFrame);
     CGFloat scale = [UIScreen mainScreen].scale;
     // The keyboard is treated as an inset since we want to effectively reduce the window size by
     // the keyboard height. The Dart side will compute a value accounting for the keyboard-consuming
     // bottom padding.
     self.targetViewInsetBottom = bottom * scale;
-  } else {
-    self.targetViewInsetBottom = 0;
   }
+//    else {
+//    self.targetViewInsetBottom = 0;
+//  }
   [self startKeyBoardAnimation:duration];
 }
 
